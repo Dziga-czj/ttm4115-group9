@@ -28,7 +28,8 @@ t1 = {'source': 'waiting',
       'target': 'reserving'}
 
 t2 = {'source': 'reserving', 
-      'target': 'waiting'}
+      'target': 'waiting', 
+      'trigger': 't_reserving'}
 
 t3 = {'source': 'reserving', 
       'target': 'riding'}
@@ -37,22 +38,24 @@ t4 = {'source': 'riding',
       'target': 'reserving'}
 
 t5 = {'source': 'waiting', 
-      'target': 'alarming'}  
+      'target': 'alarming', 
+      'trigger': 'moving_when_locked'}  
   
 t6 = {'source': 'alarming', 
-      'target': 'waiting'} 
+      'target': 'waiting', 
+      'trigger': 'stop_moving'} 
 
 
 #states
 waiting = {'name': 'waiting', 
-           'entry': 'on_waiting'}
+           'entry': ''}
     
 reserving = {'name': 'reserving', 
-              'entry': 'on_waiting; start_timer("t", 180000)'}
+              'entry': 'on_waiting; start_timer("t_reserving", 180000)'}
     
 alarming = {'name': 'alarming', 
-            'entry': 'on_alarm', 
+            'entry': '', 
             'exit': ''}
     
 riding = {'name': 'riding', 
-          'entry': 'on_riding'}
+          'entry': ''}
