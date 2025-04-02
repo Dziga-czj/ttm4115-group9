@@ -60,15 +60,6 @@ class AccountManager:
             print("No user is logged in.")
         return False
 
-    def manage_personal_details(self, new_details):
-        if self.logged_in_user:
-            self.logged_in_user.update_personal_details(new_details)
-            print("Personal details updated successfully.")
-            return True
-        else:
-            print("No user is logged in.")
-        return False
-
     def forgot_password(self, username, email):
         if username in self.accounts:
             account = self.accounts[username]

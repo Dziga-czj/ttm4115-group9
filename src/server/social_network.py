@@ -2,6 +2,9 @@
 import paho.mqtt.client as mqtt
 import json
 import database_manager
+from argon2 import PasswordHasher
+ph = PasswordHasher()
+
 
 MQTT_BROKER = 'mqtt20.iik.ntnu.no'
 MQTT_PORT = 1883
@@ -56,8 +59,9 @@ class Server():
                 username = payload['username']
                 email = payload['email']
                 password = payload['password']
+                hashed = ph.hash(password)
                 # Add user to database
-                database_manager.add_user(username, email, password)
+                database_manager.add_user(username, email, hashed)
                 # Send response
                 response = {
                     'status': 'success',
