@@ -53,7 +53,16 @@ def accept_friend_request(user_id, friend_id):
     cursor.execute("""
     UPDATE friends SET status = 'accepted' 
     WHERE user_id = ? AND friend_id = ? AND status = 'pending'
-    """, (friend_id, user_id))  # Friend must accept the request
+    """, (user_id, friend_id))
+    conn.commit()
+    conn.close()
+
+def reject_friend_request(user_id, friend_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    DELETE FROM friends WHERE status = 'pending' AND user_id = ? AND friend_id = ?
+    """, (user_id, friend_id))
     conn.commit()
     conn.close()
 
