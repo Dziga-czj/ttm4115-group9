@@ -19,43 +19,53 @@ class SCOOTER():
         
         
     def on_alarm():
+   
+   
         
-#transitions
+# transitions
 t0 = {'sourse': 'initial', 
       'target': 'waiting'}
 
 t1 = {'source': 'waiting', 
-      'target': 'reserving'}
+      'target': 'reserving', 
+      'trigger': 'reserved'}
 
 t2 = {'source': 'reserving', 
       'target': 'waiting', 
       'trigger': 't_reserving'}
 
-t3 = {'source': 'reserving', 
-      'target': 'riding'}
-
-t4 = {'source': 'riding', 
-      'target': 'reserving'}
-
-t5 = {'source': 'waiting', 
+t3 = {'source': 'waiting', 
       'target': 'alarming', 
       'trigger': 'moving_when_locked'}  
   
-t6 = {'source': 'alarming', 
+t4 = {'source': 'alarming', 
       'target': 'waiting', 
       'trigger': 'stop_moving'} 
 
+t5 = {'source': 'reserving', 
+      'target': 'riding', 
+      'trigger': 'unlock'}
 
-#states
-waiting = {'name': 'waiting', 
-           'entry': ''}
+t6 = {'source': 'riding', 
+      'target': 'waiting', 
+      'trigger': 'lock'}
+
+
+# states
+# trigger
+# effect 
+# cinditions
+# guard
+waiting = {'name': 'waiting'}
     
 reserving = {'name': 'reserving', 
-              'entry': 'on_waiting; start_timer("t_reserving", 180000)'}
+              'entry': 'on_waiting; start_timer("t_reserving", 180000)', 
+              'exit': 'stop_timer("t_reserving")'}
     
 alarming = {'name': 'alarming', 
-            'entry': '', 
-            'exit': ''}
+            'entry': 'start_alarm', 
+            'exit': 'stop_alarm'}
     
 riding = {'name': 'riding', 
-          'entry': ''}
+          'entry': 'unlock; start_timer', 
+          'exit': 'stop_timer; lock'}
