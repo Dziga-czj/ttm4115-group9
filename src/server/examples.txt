@@ -6,4 +6,22 @@
     "email": "john@mail.com",
     "password": "password123"
 }
-            
+
+{
+  "command": "add_user",
+  "username": "johnny",
+  "email": "johnny@mail.com",
+  "password": "password123"
+}
+
+{
+  "command": "send_friend_request",
+  "user_id": "1",
+  "friend_id": "2"
+}
+
+{
+  "command": "reject_friend_request",
+  "user_id": "1",
+  "friend_id": "2"
+}
