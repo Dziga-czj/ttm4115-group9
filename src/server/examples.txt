@@ -1,0 +1,9 @@
+
+
+{
+    "command": "add_user",
+    "username": "john_doe",
+    "email": "john@mail.com",
+    "password": "password123"
+}
+            
