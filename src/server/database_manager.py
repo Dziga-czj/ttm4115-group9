@@ -66,6 +66,21 @@ def reject_friend_request(user_id, friend_id):
     conn.commit()
     conn.close()
 
+def get_user_info(username):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user_info = cursor.fetchone()
+    conn.close()
+    if user_info:
+        return {
+            'id': user_info[0],
+            'username': user_info[1],
+            'email': user_info[2],
+            'password': user_info[3]
+        }
+    return None
+
 def get_friends(user_id):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()

@@ -1,5 +1,7 @@
 import sqlite3
-from database_manager import DatabaseManager
+import database_manager
+from argon2 import PasswordHasher
+ph = PasswordHasher()
 
 class Account:
     def __init__(self, username, email, password, personal_details=None):
@@ -11,22 +13,25 @@ class Account:
     @staticmethod
     def from_db_row(row):
         return Account(
+            id=row['id'],
             username=row['username'],
-            email=row['email'],
-            password=row['password'],
-            personal_details=row.get('personal_details', {})
+            email=row['email']
         )
 
 
 class AccountManager:
-    def __init__(self, db_path='social_network.db'):
-        self.db_manager = DatabaseManager(db_path)
+    def __init__(self):
         self.logged_in_user = None
 
     def login(self, username, password):
         query = "SELECT * FROM accounts WHERE username = ?"
-        result = self.db_manager.fetch_one(query, (username,))
-        if result and result['password'] == password:
+        result = database_manager.get_user_info(username)
+        if result :
+            try :
+                ph.verify(result['password'], password)
+            except:
+                print("Invalid username or password.")
+                return False
             self.logged_in_user = Account.from_db_row(result)
             return True
         print("Invalid username or password.")
