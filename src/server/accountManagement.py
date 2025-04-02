@@ -1,3 +1,6 @@
+import sqlite3
+from database_manager import DatabaseManager
+
 class Account:
     def __init__(self, username, email, password, personal_details=None):
         self.username = username
@@ -5,28 +8,28 @@ class Account:
         self.password = password
         self.personal_details = personal_details or {}
 
-    def update_password(self, new_password):
-        self.password = new_password
-
-    def update_personal_details(self, new_details):
-        self.personal_details.update(new_details)
+    @staticmethod
+    def from_db_row(row):
+        return Account(
+            username=row['username'],
+            email=row['email'],
+            password=row['password'],
+            personal_details=row.get('personal_details', {})
+        )
 
 
 class AccountManager:
-    def __init__(self):
+    def __init__(self, db_path='social_network.db'):
+        self.db_manager = DatabaseManager(db_path)
         self.logged_in_user = None
-        self.accounts = {}
 
     def login(self, username, password):
-        if username in self.accounts:
-            account = self.accounts[username]
-            if account.password == password:
-                self.logged_in_user = account
-                return True
-            else:
-                print("Invalid password.")
-        else:
-            print("Account not found.")
+        query = "SELECT * FROM accounts WHERE username = ?"
+        result = self.db_manager.fetch_one(query, (username,))
+        if result and result['password'] == password:
+            self.logged_in_user = Account.from_db_row(result)
+            return True
+        print("Invalid username or password.")
         return False
 
     def logout(self):
@@ -35,7 +38,9 @@ class AccountManager:
     def change_password(self, old_password, new_password):
         if self.logged_in_user:
             if self.logged_in_user.password == old_password:
-                self.logged_in_user.update_password(new_password)
+                query = "UPDATE accounts SET password = ? WHERE username = ?"
+                self.db_manager.execute(query, (new_password, self.logged_in_user.username))
+                self.logged_in_user.password = new_password
                 print("Password updated successfully.")
                 return True
             else:
