@@ -96,7 +96,49 @@ class Server():
                     'message': f'Friend request rejected from {friend_id} by {user_id}.'
                 }
                 self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
+                
+            case "delete_account":
+                if DEBUG:
+                    print(f"Command: {command}")
+                user_id = payload['user_id']
+                # Delete account, there should be a verification step here before the user is deleted
+                database_manager.delete_account(user_id)
+                # Send response
+                response = {
+                    'status': 'success',
+                    'message': f'Account with user ID {user_id} deleted successfully.'
+                }
+                self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
 
+            case "forgot_password":
+                if DEBUG:
+                    print(f"Command: {command}")
+                email = payload['email']
+                # Handle forgot password
+                reset_token = database_manager.forgot_password(email)
+                # Send response
+                response = {
+                    'status': 'success',
+                    'message': f'Password reset token generated for {email}.',
+                    'reset_token': reset_token
+                }
+                self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
+
+            case "change_password":
+                if DEBUG:
+                    print(f"Command: {command}")
+                user_id = payload['user_id']
+                new_password = payload['new_password']
+                hashed = ph.hash(new_password)
+                # Change password
+                database_manager.change_password(user_id, hashed)
+                # Send response
+                response = {
+                    'status': 'success',
+                    'message': f'Password changed successfully for user ID {user_id}.'
+                }
+                self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
+            
             case _:
                 if DEBUG :
                     print(f"Unknown command: {command}")
