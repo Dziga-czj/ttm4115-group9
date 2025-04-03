@@ -61,8 +61,6 @@ def register():
 
     return render_template('register.html')
 
-
-
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
@@ -88,6 +86,26 @@ def forgot_password():
 @app.route('/return_to_login')
 def return_to_login():
     return redirect(url_for('login'))
+
+@app.route('/friend_request')
+def friend_requests():
+    return render_template('friend_request.html')
+
+@app.route('/updateProfile')
+def account_management():
+    return render_template('updateProfile.html')
+
+@app.route('/passwordChange')
+def change_password():
+    return render_template('passwordChange.html')
+
+@app.route('/account_deletion')
+def delete_account():
+    return render_template('account_deletion.html')
+
+@app.route('/rentScooter')
+def rent_scooter():
+    return render_template('rentScooter.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
