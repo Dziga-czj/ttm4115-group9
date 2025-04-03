@@ -5,21 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friend Requests</title>
     <link rel="stylesheet" href="../static/style.css">
+    <style>
+        .friend-request {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .friend-request button {
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>Friend Requests</h2>
-        <form action="/send_request" method="post">
+        <form action="/send_request" method="post" onsubmit="showMessage(event)">
             <label for="friend_username">Enter Username:</label>
             <input type="text" id="friend_username" name="friend_username" required>
             <button type="submit">Send Friend Request</button>
         </form>
+        <p id="message" style="color: green; display: none;">Friend request sent!</p>
+        <button onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+
+        <script>
+            function showMessage(event) {
+            event.preventDefault(); // Prevent form submission for demonstration
+            document.getElementById('message').style.display = 'block';
+            }
+        </script>
         
         <h3>Pending Requests</h3>
         <ul>
             <!-- Friend requests will be dynamically inserted here -->
-            <li>JohnDoe <button>Accept</button> <button>Decline</button></li>
+            {% for request in friend_requests %}
+            <li class="friend-request">
+                {{ request.username }}
+                <div>
+                    <button onclick="acceptRequest('{{ request.id }}')">Accept</button>
+                    <button onclick="declineRequest('{{ request.id }}')">Decline</button>
+                </div>
+            </li>
+            {% endfor %}
         </ul>
     </div>
+
+    <script>
+        function acceptRequest(requestId) {
+            // Add logic to handle accepting the request
+            console.log(`Accepted request with ID: ${requestId}`);
+        }
+
+        function declineRequest(requestId) {
+            // Add logic to handle declining the request
+            console.log(`Declined request with ID: ${requestId}`);
+        }
+    </script>
 </body>
 </html>
