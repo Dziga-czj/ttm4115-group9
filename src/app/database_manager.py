@@ -92,6 +92,15 @@ def get_user_info(username):
         }
     return None
 
+def get_user_id(username):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
+    user_info = cursor.fetchone()
+    id = user_info[0] if user_info else None
+    conn.close()
+    return id
+
 def get_friends(user_id):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()

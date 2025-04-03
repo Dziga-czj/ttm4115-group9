@@ -30,8 +30,10 @@ def login():
         if user:
             session['user_id'] = user['id']
             return redirect(url_for('dashboard'))
+        else :
+            return render_template('login.html', error='Invalid credentials')
 
-    return render_template('login.html', error='Invalid credentials')
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -44,7 +46,7 @@ def register():
         if res == 0:
             return redirect(url_for('login'))
         elif res == 1:
-            return render_template('register.html')
+            return render_template('register.html', error='Username or email already exists.')
 
     return render_template('register.html')
 
@@ -71,8 +73,20 @@ def forgot_password():
 def return_to_login():
     return redirect(url_for('login'))
 
-@app.route('/friend_request')
+@app.route('/friend_request', methods=['GET', 'POST'])
 def friend_requests():
+    if request.method == 'POST':
+        friend_username = request.form['friend_username']
+        user_id = session['user_id']
+        friend_id = database_manager.get_user_id(friend_username)
+
+        if friend_id:
+            database_manager.send_friend_request(user_id, friend_id)
+            return render_template('friend_request.html', message='Friend request sent.')
+        else:
+            return render_template('friend_request.html', error='User not found.')
+
+
     return render_template('friend_request.html')
 
 @app.route('/updateProfile')

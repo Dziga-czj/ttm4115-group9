@@ -9,12 +9,13 @@
 <body>
     <div class="container">
         <h2>Friend Requests</h2>
-        <form action="/send_request" method="post">
+        <form action="/friend_request" method="post">
             <label for="friend_username">Enter Username:</label>
             <input type="text" id="friend_username" name="friend_username" required>
             <button type="submit">Send Friend Request</button>
         </form>
-        
+        <p style="color:greenyellow">{{ message }}</p>
+        <p style="color:red">{{ error }}</p>
         <h3>Pending Requests</h3>
         <ul>
             <!-- Friend requests will be dynamically inserted here -->
