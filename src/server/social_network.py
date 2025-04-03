@@ -9,8 +9,8 @@ ph = PasswordHasher()
 MQTT_BROKER = 'mqtt20.iik.ntnu.no'
 MQTT_PORT = 1883
 
-MQTT_TOPIC_INPUT = 'ttm4115/escargot/friends'
-MQTT_TOPIC_OUTPUT = 'ttm4115/escargot/friends_answer'
+MQTT_TOPIC_INPUT = 'ttm4115/escargot/general'
+MQTT_TOPIC_OUTPUT = 'ttm4115/escargot/general_response'
 
 DEBUG = True
 
@@ -22,21 +22,6 @@ class Server():
                 print('MQTT connected to {}'.format(client))
 
     def on_message(self, client, userdata, msg):
-        """
-        Processes incoming MQTT messages.
-
-        We assume the payload of all received MQTT messages is an UTF-8 encoded
-        string, which is formatted as a JSON object. The JSON object contains
-        a field called `command` which identifies what the message should achieve.
-
-        As a reaction to a received message, we can for example do the following:
-
-        * create a new state machine instance to handle the incoming messages,
-        * route the message to an existing state machine session,
-        * handle the message right here,
-        * throw the message away.
-
-        """
         if DEBUG:
             print('Incoming message to topic {}'.format(msg.topic))
 
@@ -53,7 +38,7 @@ class Server():
         command = payload['command']
         match command:
 
-            case "add_user":
+            case "register":
                 if DEBUG :
                     print(f"Command: {command}")
                 username = payload['username']
@@ -64,8 +49,9 @@ class Server():
                 database_manager.add_user(username, email, hashed)
                 # Send response
                 response = {
-                    'status': 'success',
-                    'message': f'User {username} added successfully.'
+                    'command': 'success',
+                    'message': f'User {username} added successfully.',
+                    'id': f'{database_manager.get_user_id(username)}'
                 }
                 self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
 
@@ -111,26 +97,6 @@ class Server():
                 }
                 self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
 
-
-            #case "new_timer":
-            #    if DEBUG :
-            #        print(f"Command: {command}")
-            #    name = payload['name']
-            #    duration = payload['duration']
-            #    duration = int(duration)
-
-            #case "cancel_timer":
-            #    if DEBUG :
-            #        print(f"Command: {command}")
-            #    name = payload['name']
-
-            #    self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=str)
-
-            #case "status_single_timer":
-            #    if DEBUG :
-            #        print(f"Command: {command}")
-            #    name = payload['name']
-            
             case _:
                 if DEBUG :
                     print(f"Unknown command: {command}")
