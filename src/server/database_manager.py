@@ -10,9 +10,9 @@ def initialize_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
         tokens INTEGER DEFAULT 100,
-        rating INTEGER DEFAULT 8,
+        rating INTEGER DEFAULT 8
     )''')
     
     cursor.execute('''
@@ -82,16 +82,6 @@ def get_user_info(username):
             'email': user_info[2],
             'password': user_info[3]
         }
-    return None
-
-def get_user_id(username):
-    conn = sqlite3.connect("social_network.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
-    user_info = cursor.fetchone()
-    conn.close()
-    if user_info:
-        int(user_info[0])
     return None
 
 def get_friends(user_id):

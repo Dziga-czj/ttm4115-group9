@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Deletion</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Delete Your Account</h1>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="container">
+            <p class="warning-text">Are you sure you want to delete your account? This action cannot be undone.</p>
+            <form action="/delete_account" method="POST" class="form">
+                <label for="password" class="form-label">Enter your password to confirm:</label>
+                <input type="password" id="password" name="password" class="form-input" required>
+                <button type="submit" class="button danger-button">Delete Account</button>
+                <a href="/profile" class="button cancel-button">Cancel</a>
+            </form>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
+        </div>
+    </footer>
+</body>
+</html>

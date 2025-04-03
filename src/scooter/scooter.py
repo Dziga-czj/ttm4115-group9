@@ -7,19 +7,20 @@ broker, port = 'test.mosquitto.org', 1883
 class SCOOTER():
     
     def on_init(self):
+       pass
         
+    def on_waiting(self):
+       pass
         
-    def on_waiting():
+    def on_reserving(self):
+       pass
         
+    def on_riding(self):
+       pass
         
-    def on_reserving():
-        
-        
-    def on_riding():
-        
-        
-    def on_alarm():
-   
+    def on_alarm(self):
+       pass
+
    
         
 # transitions
