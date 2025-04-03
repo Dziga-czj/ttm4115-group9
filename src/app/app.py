@@ -61,5 +61,20 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
 
+@app.route('/forgotPassword', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        client.send_message(MQTT_GENERAL, {
+            'command': 'forgot_password',
+            'email': email
+        })
+        return render_template('forgotPassword.html', message='If the email is registered, you will receive a reset link.')
+    return render_template('forgotPassword.html')
+
+@app.route('/return_to_login')
+def return_to_login():
+    return redirect(url_for('login'))
+
 if __name__ == '__main__':
     app.run(debug=True)
