@@ -30,6 +30,10 @@
         .scooter p {
             margin: 5px 0;
         }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
         button {
             background-color: #4CAF50;
             color: white;
@@ -41,7 +45,25 @@
             transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #007BFF;
+        }
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .back-button button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back-button button:hover {
+            background-color: darkblue;
         }
     </style>
 </head>
@@ -50,7 +72,25 @@
     <div class="scooter">
         <h2>Scooter #1</h2>
         <p>Battery Level: <strong id="battery-level">92</strong>%</p>
-        <button onclick="rentScooter()">Rent Scooter</button>
+        <div class="button-group">
+            <button onclick="rentScooter()">Rent Scooter</button>
+            <button onclick="reserveScooter()">Reserve Scooter</button>
+        </div>
     </div>
+    <div class="back-button">
+        <button onclick="goToDashboard()">Back to Dashboard</button>
+    </div>
+    <script>
+        function rentScooter() {
+            alert('Scooter rented!');
+        }
+
+        function reserveScooter() {
+            alert('Scooter reserved!');
+        }
+        function goToDashboard() {
+            window.location.href = '/dashboard'; // Replace with the actual dashboard URL
+        }
+    </script>
 </body>
 </html>
