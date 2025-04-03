@@ -73,20 +73,55 @@ def forgot_password():
 def return_to_login():
     return redirect(url_for('login'))
 
-@app.route('/friend_request', methods=['GET', 'POST'])
+@app.route('/friend_request', methods=['GET','POST'])
 def friend_requests():
+    user_id = session['user_id']
+        
+    pending_requests = database_manager.get_pending_requests(user_id)
+
+
+
+    message = request.args.get('message')
+    message = message if message else ""
+    error = request.args.get('error')
+    error = error if error else ""
+
+    return render_template('friend_request.html', pending_requests=pending_requests, message=message, error=error)
+
+
+@app.route('/send_friend_request', methods=['POST'])
+def send_friend_requests():
     if request.method == 'POST':
         friend_username = request.form['friend_username']
         user_id = session['user_id']
         friend_id = database_manager.get_user_id(friend_username)
-
+        if friend_id == user_id:
+            return redirect(url_for('.friend_requests', error='You cannot send a friend request to yourself.'))
         if friend_id:
             database_manager.send_friend_request(user_id, friend_id)
-            return render_template('friend_request.html', message='Friend request sent.')
+            return redirect(url_for('.friend_requests', message='Friend request sent.'))
         else:
-            return render_template('friend_request.html', error='User not found.')
+            return redirect(url_for('.friend_requests', error='User not found.'))
+        
 
+    return render_template('friend_request.html')
 
+@app.route('/accept_friend_request', methods=['POST'])
+def accept_friend_request():
+    if request.method == 'POST':
+        user_id = session['user_id']
+        friend_id = request.form['friend_id']
+        database_manager.accept_friend_request(user_id, friend_id)
+        return redirect(url_for('.friend_requests', message='Friend request accepted.'))
+    return render_template('friend_request.html')
+
+@app.route('/reject_friend_request', methods=['POST'])
+def reject_friend_request():
+    if request.method == 'POST':
+        user_id = session['user_id']
+        friend_id = request.form['friend_id']
+        database_manager.reject_friend_request(friend_id, user_id)
+        return redirect(url_for('.friend_requests', error='Friend request rejected.'))
     return render_template('friend_request.html')
 
 @app.route('/updateProfile')
@@ -98,7 +133,17 @@ def change_password():
     return render_template('passwordChange.html')
 
 @app.route('/account_deletion')
+def account_deletion():
+    
+    return render_template('account_deletion.html')
+
+@app.route('/delete_account', methods=['POST'])
 def delete_account():
+    if request.method == 'POST':
+        user_id = session['user_id']
+        database_manager.delete_account(user_id)
+        session.pop('user_id', None)
+        return redirect(url_for('login'))
     return render_template('account_deletion.html')
 
 @app.route('/rentScooter')

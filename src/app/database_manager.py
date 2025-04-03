@@ -77,6 +77,27 @@ def reject_friend_request(user_id, friend_id):
     conn.commit()
     conn.close()
 
+def get_pending_requests(user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT user_id FROM friends where friend_id = ? AND friends.status = 'pending'
+    """, (user_id,))
+    pending_requests = cursor.fetchall()
+
+    res = []
+
+    for id in pending_requests :
+        cursor.execute("""
+        SELECT username FROM users where id = ?
+        """, (id[0],))
+        username = cursor.fetchall()[0]
+        res.append((id[0], username[0]))
+    
+    print(res)
+    conn.close()
+    return res
+
 def get_user_info(username):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()

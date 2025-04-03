@@ -20,7 +20,7 @@
 <body>
     <div class="container">
         <h2>Friend Requests</h2>
-        <form action="/friend_request" method="post">
+        <form action="/send_friend_request" method="post">
             <label for="friend_username">Enter Username:</label>
             <input type="text" id="friend_username" name="friend_username" required>
             <button type="submit">Send Friend Request</button>
@@ -33,12 +33,22 @@
         <h3>Pending Requests</h3>
         <ul>
             <!-- Friend requests will be dynamically inserted here -->
-            {% for request in friend_requests %}
+            {% for request in pending_requests %}
             <li class="friend-request">
-                {{ request.username }}
+                {{ request[1] }}
                 <div>
-                    <button onclick="acceptRequest('{{ request.id }}')">Accept</button>
-                    <button onclick="declineRequest('{{ request.id }}')">Decline</button>
+                    <form action="/accept_friend_request" method="post">
+                        <inline>
+                            <input type="hidden" name="friend_id" value="{{ request[0] }}">
+                        </inline>
+                        <button type="submit">Accept</button>
+                    </form>
+                    <form action="/reject_friend_request" method="post">
+                        <inline>
+                            <input type="hidden" name="friend_id" value="{{ request[0] }}">
+                        </inline>
+                        <button type="submit">Reject</button>
+                    </form>
                 </div>
             </li>
             {% endfor %}
