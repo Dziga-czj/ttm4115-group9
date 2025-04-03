@@ -9,6 +9,8 @@ class Account:
         self.email = email
         self.password = password
         self.personal_details = personal_details or {}
+        self.tokens = 100 #Default
+        self.rating = 8 #Default
 
     @staticmethod
     def from_db_row(row):

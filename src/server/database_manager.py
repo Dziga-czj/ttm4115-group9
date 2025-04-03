@@ -1,4 +1,5 @@
 import sqlite3
+import re
 
 def initialize_db():
     conn = sqlite3.connect("social_network.db")
@@ -10,6 +11,8 @@ def initialize_db():
         username TEXT UNIQUE NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
+        tokens INTEGER DEFAULT 100,
+        rating INTEGER DEFAULT 8,
     )''')
     
     cursor.execute('''
@@ -92,6 +95,42 @@ def get_friends(user_id):
     friends = cursor.fetchall()
     conn.close()
     return friends
+
+def change_password(user_id, new_password):
+    if not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'[!@#$%^&*(),.?":{}|<>]', new_password):
+        print("Password must contain at least one uppercase letter, one lowercase letter, and one special character.")
+        return
+
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password = ? WHERE id = ?", (new_password, user_id))
+    conn.commit()
+    conn.close()
+    print("Password updated successfully.")
+
+def delete_account(user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM friends WHERE user_id = ? OR friend_id = ?", (user_id, user_id))
+    cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    print("Account deleted successfully.")
+
+def forgot_password(email, new_password):
+    if not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'[!@#$%^&*(),.?":{}|<>]', new_password):
+        print("Password must contain at least one uppercase letter, one lowercase letter, and one special character.")
+        return
+
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password = ? WHERE email = ?", (new_password, email))
+    if cursor.rowcount == 0:
+        print("No account found with the provided email.")
+    else:
+        print("Password reset successfully.")
+    conn.commit()
+    conn.close()
 
 # Initialize database
 initialize_db()
