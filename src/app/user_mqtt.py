@@ -19,10 +19,16 @@ class User():
         self.username = None
         self.email = None
         self.tokens = None
+        self.on_login = None
+    
 
 
 
 class Mqtt_client():
+
+    def wait_for_answer(self, topic):
+        while self.answer != None:
+            self.mqtt_client.loop()
 
     def on_connect(self, client, userdata, flags, rc):
             # we just log that we are connected
@@ -42,15 +48,11 @@ class Mqtt_client():
         if DEBUG:
             print(f"Stringified Payload {payload}")
 
-        
-
-       
-        
-        
 
         if msg.topic == MQTT_TOPIC_GENERAL:
             command = payload['command']
             if command == "success":
+
                 print(f"Success with id {payload['id']}")
                 id = payload['id']
                 self.user.id = payload['id']

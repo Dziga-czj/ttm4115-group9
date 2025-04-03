@@ -1,6 +1,10 @@
 import sqlite3
 import re
 
+from argon2 import PasswordHasher
+ph = PasswordHasher()
+
+
 def initialize_db():
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
@@ -31,13 +35,17 @@ def initialize_db():
 def add_user(username, email, password):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
+    hash = ph.hash(password)
     try:
-        cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, password))
-        conn.commit()
+        cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, hash))
+        conn.commit()    
     except sqlite3.IntegrityError:
         print("Username or email already exists.")
+        conn.close()
+        return 1
     finally:
         conn.close()
+    return 0
 
 def send_friend_request(user_id, friend_id):
     conn = sqlite3.connect("social_network.db")
@@ -116,6 +124,37 @@ def delete_account(user_id):
     conn.commit()
     conn.close()
     print("Account deleted successfully.")
+
+def check_user(username, password):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT password from users where username = ?", (username,))
+    hash = cursor.fetchall()
+    if not hash:
+        print("User not found.")
+        return None
+    else :
+        test_password = hash[0][0]
+        try:
+            ph.verify(test_password, password)
+            print("Password is correct.")
+        except:
+            print("Password is incorrect.")
+            return None
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user_info = cursor.fetchone()
+    if user_info:
+        user = {
+            'id': user_info[0],
+            'username': user_info[1],
+            'email': user_info[2],
+            'password': user_info[3]
+        }
+    else:
+        print("User not found.2")
+        return None
+    conn.close()
+    return user
 
 def forgot_password(email, new_password):
     if not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'[!@#$%^&*(),.?":{}|<>]', new_password):
