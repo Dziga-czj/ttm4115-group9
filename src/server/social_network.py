@@ -1,7 +1,7 @@
 
 import paho.mqtt.client as mqtt
 import json
-import database_manager
+import app.database_manager as database_manager
 from argon2 import PasswordHasher
 ph = PasswordHasher()
 
@@ -45,14 +45,21 @@ class Server():
                 email = payload['email']
                 password = payload['password']
                 hashed = ph.hash(password)
+                
                 # Add user to database
-                database_manager.add_user(username, email, hashed)
+                res = database_manager.add_user(username, email, hashed)
+                if res == 0 :
                 # Send response
-                response = {
-                    'command': 'success',
-                    'message': f'User {username} added successfully.',
-                    'id': f'{database_manager.get_user_id(username)}'
-                }
+                    response = {
+                        'command': 'success',
+                        'message': f'User {username} added successfully.',
+                        'id': f'{database_manager.get_user_id(username)}'
+                    }
+                else :
+                    response = {
+                        'command': 'error',
+                        'message': f'usernmae or password already exists.'
+                    }
                 self.mqtt_client.publish(MQTT_TOPIC_OUTPUT, payload=json.dumps(response))
 
             case "send_friend_request":
