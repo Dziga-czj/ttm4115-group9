@@ -48,6 +48,9 @@ def add_user(username, email, password):
     return 0
 
 def send_friend_request(user_id, friend_id):
+    friends = get_friends(user_id)
+    if friend_id in [friend[0] for friend in friends]:
+        return
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
     try:
@@ -59,6 +62,19 @@ def send_friend_request(user_id, friend_id):
         conn.close()
 
 def accept_friend_request(user_id, friend_id):
+
+    friends = get_friends(user_id)
+    if friend_id in [friend[0] for friend in friends]:
+        conn = sqlite3.connect("social_network.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+        DELETE FROM friends WHERE status = 'pending' AND user_id = ? AND friend_id = ?
+        """, (user_id, friend_id))
+        conn.commit()
+
+        conn.close()
+        return
+
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
     cursor.execute("""
@@ -66,6 +82,7 @@ def accept_friend_request(user_id, friend_id):
     WHERE user_id = ? AND friend_id = ? AND status = 'pending'
     """, (user_id, friend_id))
     conn.commit()
+
     conn.close()
 
 def reject_friend_request(user_id, friend_id):
@@ -98,6 +115,36 @@ def get_pending_requests(user_id):
     conn.close()
     return res
 
+def get_sent_requests(user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT friend_id FROM friends where user_id = ? AND friends.status = 'pending'
+    """, (user_id,))
+    pending_requests = cursor.fetchall()
+
+    res = []
+    for id in pending_requests :
+        cursor.execute("""
+        SELECT username FROM users where id = ?
+        """, (id[0],))
+        username = cursor.fetchall()[0]
+        res.append((id[0], username[0]))
+    
+    print(res)
+    conn.close()
+    return res
+
+def get_username(user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+    username = cursor.fetchone()
+    conn.close()
+    if username:
+        return username[0]
+    return None
+
 def get_user_info(username):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
@@ -110,6 +157,20 @@ def get_user_info(username):
             'username': user_info[1],
             'email': user_info[2],
             'password': user_info[3]
+        }
+    return None
+
+def get_user_by_id(user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+    user_info = cursor.fetchone()
+    conn.close()
+    if user_info:
+        return {
+            'username': user_info[1],
+            'email': user_info[2],
+            'coquilles': user_info[4],
         }
     return None
 
@@ -126,10 +187,11 @@ def get_friends(user_id):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT users.id, users.username FROM users 
-    JOIN friends ON users.id = friends.friend_id 
-    WHERE friends.user_id = ? AND friends.status = 'accepted'
-    """, (user_id,))
+    SELECT u.id, u.username, u.email 
+    FROM users u 
+    JOIN friends f ON (u.id = f.friend_id AND f.user_id = ? AND f.status = 'accepted') 
+                   OR (u.id = f.user_id AND f.friend_id = ? AND f.status = 'accepted')
+    """, (user_id, user_id,))
     friends = cursor.fetchall()
     conn.close()
     return friends
@@ -198,6 +260,23 @@ def forgot_password(email, new_password):
         print("No account found with the provided email.")
     else:
         print("Password reset successfully.")
+    conn.commit()
+    conn.close()
+
+def update_user_password(user_id, new_password):
+    hash = ph.hash(new_password)
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password = ? WHERE id = ?", (hash, user_id))
+    conn.commit()
+    conn.close()
+    
+
+
+def update_user_username(user_id, new_username):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
     conn.commit()
     conn.close()
 

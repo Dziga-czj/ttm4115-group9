@@ -4,116 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/dashboard.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        h2, h3 {
-            color: #333;
-        }
-        nav ul {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        nav ul li {
-            display: block;
-        }
-        nav ul li a {
-            text-decoration: none;
-            color: #007BFF;
-            padding: 8px 12px;
-            border: 1px solid #007BFF;
-            border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        nav ul li a:hover {
-            background-color: #007BFF;
-            color: #fff;
-        }
-        #friend-list {
-            list-style: none;
-            padding: 0;
-        }
-        #friend-list li {
-            background: #f9f9f9;
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .token-display {
+        .logout-link {
             position: absolute;
-            top: 20px;
             right: 20px;
-            background: #007BFF;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .secondary-buttons {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .secondary-buttons a {
-            text-decoration: none;
-            color: #fff;
-            background-color: #007BFF;
-            padding: 10px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .secondary-buttons a:hover {
-            background-color: #0056b3;
-        }
-        .secondary-buttons a.delete-account {
-            background-color: #dc3545;
-        }
-        .secondary-buttons a.delete-account:hover {
-            background-color: #a71d2a;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="position: relative;">
         <div class="token-display">
-            100 Coquilles
+            {{ user["username"] }} test
         </div>
-        <h2>Welcome, User!</h2>
+        <div class="token-display">
+            {{ user['coquilles'] }} Coquilles
+        </div>
+        <h2>Welcome {{ user["username"] }}!</h2>
         <nav>
             <ul style="display: flex; justify-content: space-between; gap: 20px; padding: 0;">
-            <li><a href="/friend_request">Friend Requests</a></li>
-            <li><a href="/rentScooter">Rent a Scooter</a></li>
-            <li><a href="/logout">Logout</a></li>
+                <li><a href="/friend_request">Friend Requests</a></li>
+                <li><a href="/rentScooter">Rent a Scooter</a></li>
             </ul>
         </nav>
         <h3>Your Friends</h3>
         <ul id="friend-list">
             <!-- Friends will be dynamically inserted here -->
-            <li>JohnDoe</li>
-            <li>JaneSmith</li>
+            {% for friend in friends %}
+            <li class="friend">
+                {{ friend[1] }}
+            </li>
+            {% endfor %}
         </ul>
         <h3>Account Management</h3>
         <div class="secondary-buttons">
             <a href="/updateProfile">Profile Settings</a>
+            <a href="/logout" class="danger_buttons logout-link">Logout</a>
         </div>
+        
     </div>
+    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
 </body>
 </html>

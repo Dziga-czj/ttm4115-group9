@@ -1,92 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: #ffffff;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            text-align: left;
-        }
-        input[type="text"], input[type="email"] {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 100%;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .link-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .link-buttons a {
-            text-decoration: none;
-            color: white;
-            background-color: #dc3545;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .link-buttons a:hover {
-            background-color: #a71d2a;
-        }
-    </style>
-    </head>
-    <body>
-        <a href="/dashboard" style="text-decoration: none; color: white; background-color: #007BFF; padding: 10px 15px; border-radius: 5px; font-size: 14px; position: absolute; top: 20px; left: 20px;">Return to Dashboard</a>
-        <div class="container">
-            <h1>Account Management</h1>
-            <form action="/updateProfile" method="POST">
-                <label for="username">Change Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter new username" required>
-                
-                <button type="submit">Save Changes</button>
-            </form>
-            <div class="link-buttons">
-                <a href="/account_deletion">Delete Account</a>
-                <a href="/passwordChange">Change Password</a>
-            </div>
+    <link rel="stylesheet" href="../static/dashboard.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="secondary-buttons">
+            <a href="/dashboard">&larr; Back to Dashboard</a>
         </div>
-    </body>
-    </html>
+
+        <h1>Account Management</h1>
+        <form action="/updateProfile" method="POST">
+            <label for="username">Change Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter new username" required>
+            <button type="submit" class="primary-button">Save Changes</button>
+        </form>
+        <div class="secondary-buttons">
+            <a class="danger_buttons" href="/account_deletion">Delete Account</a>
+            <a href="/passwordChange">Change Password</a>
+        </div>
+    </div>
+    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
+</body>
+
+</html>

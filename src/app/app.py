@@ -54,7 +54,14 @@ def register():
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+
+    user_id = session['user_id']
+    user = database_manager.get_user_by_id(user_id)
+    if not user:
+        return redirect(url_for('login'))
+    friends = database_manager.get_friends(user_id)
+
+    return render_template('dashboard.html', friends=friends, user=user)
 
 @app.route('/logout')
 def logout():
@@ -78,7 +85,7 @@ def friend_requests():
     user_id = session['user_id']
         
     pending_requests = database_manager.get_pending_requests(user_id)
-
+    sent_requests = database_manager.get_sent_requests(user_id)
 
 
     message = request.args.get('message')
@@ -86,7 +93,7 @@ def friend_requests():
     error = request.args.get('error')
     error = error if error else ""
 
-    return render_template('friend_request.html', pending_requests=pending_requests, message=message, error=error)
+    return render_template('friend_request.html', pending_requests=pending_requests, sent_requests=sent_requests, message=message, error=error)
 
 
 @app.route('/send_friend_request', methods=['POST'])
@@ -109,8 +116,9 @@ def send_friend_requests():
 @app.route('/accept_friend_request', methods=['POST'])
 def accept_friend_request():
     if request.method == 'POST':
-        user_id = session['user_id']
-        friend_id = request.form['friend_id']
+        # inverted bc the friend id is the current user
+        friend_id = session['user_id']
+        user_id = request.form['friend_id']
         database_manager.accept_friend_request(user_id, friend_id)
         return redirect(url_for('.friend_requests', message='Friend request accepted.'))
     return render_template('friend_request.html')
@@ -124,26 +132,47 @@ def reject_friend_request():
         return redirect(url_for('.friend_requests', error='Friend request rejected.'))
     return render_template('friend_request.html')
 
-@app.route('/updateProfile')
+@app.route('/updateProfile', methods=['GET', 'POST'])
 def account_management():
+    if request.method == 'POST':
+        username = request.form['username']
+        user_id = session['user_id']
+        database_manager.update_user_username(user_id, username)
+        return redirect(url_for('dashboard'))
     return render_template('updateProfile.html')
 
-@app.route('/passwordChange')
+@app.route('/passwordChange', methods=['GET', 'POST'])
 def change_password():
+    if request.method == 'POST':
+        user_id = session['user_id']
+        username = database_manager.get_username(user_id)
+        current_password = request.form['current-password']
+        new_password = request.form['new-password']
+        user = database_manager.check_user(username, current_password)
+        if user:
+            database_manager.update_user_password(user_id, new_password)
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('passwordChange.html', error='Invalid current password')
     return render_template('passwordChange.html')
 
 @app.route('/account_deletion')
 def account_deletion():
-    
     return render_template('account_deletion.html')
 
 @app.route('/delete_account', methods=['POST'])
 def delete_account():
     if request.method == 'POST':
         user_id = session['user_id']
-        database_manager.delete_account(user_id)
-        session.pop('user_id', None)
-        return redirect(url_for('login'))
+        username = database_manager.get_username(user_id)
+        password = request.form['password']
+        user = database_manager.check_user(username, password)
+        if user:
+            database_manager.delete_account(user_id)
+            session.pop('user_id', None)
+            return redirect(url_for('login'))
+        else:
+            return render_template('account_deletion.html', error='Invalid password')
     return render_template('account_deletion.html')
 
 @app.route('/rentScooter')

@@ -1,70 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friend Requests</title>
-    <link rel="stylesheet" href="../static/style.css">
-    <style>
-        .friend-request {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .friend-request button {
-            margin-left: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/dashboard.css">
 </head>
+<style>
+    .friend-request {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .friend-request button {
+        margin-left: 5px;
+    }
+    #friend-request-list {
+        padding: 10px;
+        border-radius: 5px;
+        list-style-type: none;
+        margin: 0;
+        padding-left: 0;
+    }
+</style>    
 <body>
     <div class="container">
         <h2>Friend Requests</h2>
         <form action="/send_friend_request" method="post">
             <label for="friend_username">Enter Username:</label>
             <input type="text" id="friend_username" name="friend_username" required>
-            <button type="submit">Send Friend Request</button>
+            <button type="submit" class="primary-button">Send Friend Request</button>
         </form>
         <p style="color:greenyellow">{{ message }}</p>
         <p style="color:red">{{ error }}</p>
-        <p id="message" style="color: green; display: none;">Friend request sent!</p>
-        <button onclick="window.location.href='/dashboard'">Back to Dashboard</button>
-        
         <h3>Pending Requests</h3>
-        <ul>
+        <ul id="friend-request-list">
             <!-- Friend requests will be dynamically inserted here -->
             {% for request in pending_requests %}
             <li class="friend-request">
                 {{ request[1] }}
-                <div>
+                <div style="display: flex; gap: 10px;">
                     <form action="/accept_friend_request" method="post">
-                        <inline>
-                            <input type="hidden" name="friend_id" value="{{ request[0] }}">
-                        </inline>
-                        <button type="submit">Accept</button>
+                        <input type="hidden" name="friend_id" value="{{ request[0] }}">
+                        <button type="submit" class="secondary-button">Accept</button>
                     </form>
                     <form action="/reject_friend_request" method="post">
-                        <inline>
-                            <input type="hidden" name="friend_id" value="{{ request[0] }}">
-                        </inline>
-                        <button type="submit">Reject</button>
+                        <input type="hidden" name="friend_id" value="{{ request[0] }}">
+                        <button type="submit" class="secondary-button">Reject</button>
                     </form>
                 </div>
             </li>
             {% endfor %}
+            {% for request in sent_requests %}
+            <li class="friend-request">
+                Sent request to {{ request[1] }}.
+            </li>
+            {% endfor %}
         </ul>
+        <div class="secondary-buttons">
+            <a href="/dashboard">Back to Dashboard</a>
+        </div>
     </div>
-
-    <script>
-        function acceptRequest(requestId) {
-            // Add logic to handle accepting the request
-            console.log(`Accepted request with ID: ${requestId}`);
-        }
-
-        function declineRequest(requestId) {
-            // Add logic to handle declining the request
-            console.log(`Declined request with ID: ${requestId}`);
-        }
-    </script>
+    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
 </body>
+
 </html>
