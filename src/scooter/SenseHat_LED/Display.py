@@ -1,9 +1,9 @@
+#need test on pi
 import time
 from sense_hat import SenseHat
 from GetSpeed import getSpeed
 from SetNumber import setNumber
 from SetBattery import setBattery
-
 
 sense = SenseHat()
 sense.set_imu_config(True, True, True)
