@@ -2,6 +2,7 @@
 {% block title %}Rent a Scooter{% endblock %}
 
 {% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <style>
 .scooter-container {
     display: flex;
@@ -29,26 +30,34 @@
     gap: 10px;
     justify-content: center;
 }
+#map {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
     <h1 class="page-title">Available Scooters</h1>
-    <div class="scooter-container">
-        <div class="scooter">
-            <h2>Scooter #1</h2>
-            <p>Battery Level: <strong id="battery-level">92</strong>%</p>
+    <div style="display: flex; gap: 20px;">
+        <div id="map"></div>
+        <div class="scooter-container">
+            {% for s in scooters %}
+            <div class="scooter">
+            <h2>Scooter #{{ s.id }}</h2>
+            <p>Battery Level: {{ s.battery }}%</p>
             <div class="button-group">
-                <button onclick="rentScooter()" class="button button-primary">
-                    Rent Scooter
-                </button>
-                <button onclick="reserveScooter()" class="button button-primary">
-                    Reserve Scooter
-                </button>
+                <button onclick="rentScooter({{ s.id }})" class="button button-primary">Rent Scooter</button>
+                <button onclick="reserveScooter({{ s.id }})" class="button button-primary">Reserve Scooter</button>
             </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
+    
     <div class="secondary-buttons">
         <a href="/dashboard" class="button button-primary">Back to Dashboard</a>
     </div>
@@ -56,13 +65,25 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-    function rentScooter() {
-        alert('Scooter rented!');
-    }
+    const scooters = {{ scooters|tojson }};
 
-    function reserveScooter() {
-        alert('Scooter reserved!');
+    const map = L.map('map');
+    map.setView([scooters[0].lattitude, scooters[0].longitude], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 50}).addTo(map);
+
+    scooters.forEach((scooter) =>{
+        L.marker([scooter.lattitude, scooter.longitude]).addTo(map).bindPopup(
+            `Scooter #${scooter.id}` + '<br>' +
+            `Battery: ${scooter.battery}%`
+        );
+    });
+    function rentScooter(id) {
+        alert(`Scooter ${id} rented!`);
+    }
+    function reserveScooter(id) {
+        alert(`Scooter ${id} reserved!`);
     }
 </script>
 {% endblock %}

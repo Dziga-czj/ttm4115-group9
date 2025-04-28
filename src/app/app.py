@@ -177,7 +177,11 @@ def delete_account():
 
 @app.route('/rentScooter')
 def rent_scooter():
-    return render_template('rentScooter.html')
+    scooters = [
+      {'id': 0, 'battery': 92, 'lattitude': 63.419457, 'longitude': 10.404290},
+      {'id': 1, 'battery': 98, 'lattitude': 63.417519, 'longitude': 10.403096}
+    ]
+    return render_template('rentScooter.html', scooters=scooters)
 
 if __name__ == '__main__':
     app.run(debug=True)
