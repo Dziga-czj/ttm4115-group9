@@ -5,43 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../static/login.css">
-    <style>
-        .logo {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 500px; 
-            top: 50px; 
-            left: 50%;
-            transform: translateX(-50%);
-            height: auto;
-        }
-    </style>
-    <img src="../static/Komsys_logo.svg" alt="Komsys Logo" class="logo">
 </head>
 <body>
     <div>
-    <script src="../static/error_handling.js"></script>
-    <div class="container">
-        <h2>Login</h2>
-        <form action="/login" method="post">
-            <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <button type="submit">Login</button>
-            </div>
-        </form>
+        <script src="../static/error_handling.js"></script>
+        <img src="../static/Komsys_logo.svg" alt="Komsys Logo" class="logo">
+        <div class="container">
+            <h2>Login</h2>
+            <form action="/login" method="post">
+                <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                
+                <button type="submit">Login</button>
+                </div>
+            </form>
 
-        <div>{{ error }}</div>
+            <div>{{ error }}</div>
 
-        <button onclick="location.href='/forgotPassword'" style="margin-top: 10px; font-size: 0.9em;">Forgot Password?</button>
-        <p>Don't have an account? <a href="/register">Register here</a></p>
-    </div>
-    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
+            <button onclick="location.href='/forgotPassword'" style="margin-top: 10px; font-size: 0.9em;">Forgot Password?</button>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
+        <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
     </div>
 </body>
 </html>

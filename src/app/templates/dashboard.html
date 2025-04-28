@@ -6,12 +6,6 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="../static/dashboard.css">
     <style>
-        body {
-            background-image: url('../static/Komsys_logo.svg');
-            background-repeat: no-repeat;
-            background-position: center 275px; 
-            background-size: 80%; 
-        }
         .logout-link {
             position: absolute;
             right: 50px;
@@ -20,6 +14,7 @@
     </style>
 </head>
 <body>
+    <img src="../static/Komsys_logo.svg" alt="Komsys Logo" class="logo">
     <div class="container" style="position: relative;">
         <div class="token-display">
             {{ user["username"] }} test
