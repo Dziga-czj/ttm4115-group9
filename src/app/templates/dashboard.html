@@ -1,50 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="../static/dashboard.css">
-    <style>
-        .logout-link {
-            position: absolute;
-            right: 50px;
-        }
-    </style>
-    </style>
-</head>
-<body>
-    <img src="../static/Komsys_logo.svg" alt="Komsys Logo" class="logo">
-    <div class="container" style="position: relative;">
-        <div class="token-display">
-            {{ user["username"] }} test
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block head %}
+<style>
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+nav ul li {
+  display: block;
+}
+nav ul li a {
+  padding: 8px 12px;
+  border: 1px solid #007BFF;
+  border-radius: 4px;
+  color: #007BFF;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+nav ul li a:hover {
+  background-color: #007BFF;
+  color: #fff;
+}
+.token-group {
+  display: flex;
+  gap: 10px;
+}
+.token-display {
+  background: #007BFF;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.welcome-text {
+  margin: 0;
+  font-size: 1.5em;
+  color: #333;
+  flex: 1 1 auto;
+  min-width: 200px;
+}
+#friend-list {
+  list-style: none;
+  padding: 0;
+}
+#friend-list li {
+  background: #f9f9f9;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Available Scooters</h1>
+    <div class="dashboard-header">
+        <div class="token-group">
+            <div class="token-display">
+                {{ user["username"] }} test
+            </div>
+            <div class="token-display">
+                {{ user['coquilles'] }} Coquilles
+            </div>
         </div>
-        <div class="token-display">
-            {{ user['coquilles'] }} Coquilles
-        </div>
-        <h2>Welcome {{ user["username"] }}!</h2>
-        <nav>
-            <ul style="display: flex; justify-content: space-between; gap: 20px; padding: 0;">
-                <li><a href="/friend_request">Friend Requests</a></li>
-                <li><a href="/rentScooter">Rent a Scooter</a></li>
-            </ul>
-        </nav>
-        <h3>Your Friends</h3>
-        <ul id="friend-list">
-            <!-- Friends will be dynamically inserted here -->
-            {% for friend in friends %}
-            <li class="friend">
-                {{ friend[1] }}
-            </li>
-            {% endfor %}
-        </ul>
-        <h3>Account Management</h3>
-        <div class="secondary-buttons">
-            <a href="/updateProfile">Profile Settings</a>
-            <a href="/logout" class="danger_buttons logout-link">Logout</a>
-        </div>
-        
     </div>
-    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
-</body>
-</html>
+    <nav>
+        <ul>
+            <li><a href="/friend_request">Friend Requests</a></li>
+            <li><a href="/rentScooter">Rent a Scooter</a></li>
+        </ul>
+    </nav>
+    <h3>Your Friends</h3>
+    <ul id="friend-list">
+        {% for friend in friends %}
+        <li class="friend">
+            {{ friend[1] }}
+        </li>
+        {% endfor %}
+    </ul>
+    <h3>Account Management</h3>
+    <div class="secondary-buttons" class="secondary-buttons">
+        <a href="/updateProfile" class="button button-primary">Profile Settings</a>
+        <a href="/logout" class="button button-secondary">Logout</a>
+    </div>
+</div>
+{% endblock %}

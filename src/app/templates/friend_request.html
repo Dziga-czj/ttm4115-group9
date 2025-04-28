@@ -1,73 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Friend Requests{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friend Requests</title>
-    <link rel="stylesheet" href="../static/dashboard.css">
-</head>
+{% block head %}
 <style>
-    .friend-request {
-        background-color: #f9f9f9;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .friend-request button {
-        margin-left: 5px;
-    }
-    #friend-request-list {
-        padding: 10px;
-        border-radius: 5px;
-        list-style-type: none;
-        margin: 0;
-        padding-left: 0;
-    }
-</style>    
-<body>
-    <div class="container">
-        <h2>Friend Requests</h2>
-        <form action="/send_friend_request" method="post">
-            <label for="friend_username">Enter Username:</label>
-            <input type="text" id="friend_username" name="friend_username" required>
-            <button type="submit" class="primary-button">Send Friend Request</button>
-        </form>
-        <p style="color:greenyellow">{{ message }}</p>
-        <p style="color:red">{{ error }}</p>
-        <h3>Pending Requests</h3>
-        <ul id="friend-request-list">
-            <!-- Friend requests will be dynamically inserted here -->
-            {% for request in pending_requests %}
-            <li class="friend-request">
-                {{ request[1] }}
-                <div style="display: flex; gap: 10px;">
-                    <form action="/accept_friend_request" method="post">
-                        <input type="hidden" name="friend_id" value="{{ request[0] }}">
-                        <button type="submit" class="secondary-button">Accept</button>
-                    </form>
-                    <form action="/reject_friend_request" method="post">
-                        <input type="hidden" name="friend_id" value="{{ request[0] }}">
-                        <button type="submit" class="secondary-button">Reject</button>
-                    </form>
-                </div>
-            </li>
-            {% endfor %}
-            {% for request in sent_requests %}
-            <li class="friend-request">
-                Sent request to {{ request[1] }}.
-            </li>
-            {% endfor %}
-        </ul>
-        <div class="secondary-buttons">
-            <a href="/dashboard">Back to Dashboard</a>
-        </div>
-    </div>
-    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
-</body>
+.friend-request {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+.friend-request-actions {
+  display: flex;
+  gap: 10px;
+}
+.friend-request button {
+  margin-left: 5px;
+}
+#friend-request-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 0 0;
+}
+</style>
+{% endblock %}
 
-</html>
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Friend Requests</h1>
+    <form action="/send_friend_request" method="post">
+        <label for="friend_username">Enter Username:</label>
+        <input type="text" id="friend_username" name="friend_username" required>
+        <button type="submit" class="button button-primary">Send Friend Request</button>
+    </form>
+    <p style="color:greenyellow">{{ message }}</p>
+    <p style="color:red">{{ error }}</p>
+    <h3>Pending Requests</h3>
+    <ul id="friend-request-list">
+        {% for request in pending_requests %}
+        <li class="friend-request">
+            {{ request[1] }}
+            <div class="friend-request-actions">
+                <form action="/accept_friend_request" method="post">
+                    <input type="hidden" name="friend_id" value="{{ request[0] }}">
+                    <button type="submit" class="button button-primary">Accept</button>
+                </form>
+                <form action="/reject_friend_request" method="post">
+                    <input type="hidden" name="friend_id" value="{{ request[0] }}">
+                    <button type="submit" class="button button-secondary">Reject</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+        {% for request in sent_requests %}
+        <li class="friend-request">
+            Sent request to {{ request[1] }}.
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="secondary-buttons">
+        <a href="/dashboard" class="button button-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,31 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Update Profile{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Profile</title>
-    <link rel="stylesheet" href="../static/dashboard.css">
-</head>
-
-<body>
-    <div class="container">
-        <div class="secondary-buttons">
-            <a href="/dashboard">&larr; Back to Dashboard</a>
-        </div>
-
-        <h1>Account Management</h1>
-        <form action="/updateProfile" method="POST">
-            <label for="username">Change Username</label>
-            <input type="text" id="username" name="username" placeholder="Enter new username" required>
-            <button type="submit" class="primary-button">Save Changes</button>
-        </form>
-        <div class="secondary-buttons">
-            <a class="danger_buttons" href="/account_deletion">Delete Account</a>
-            <a href="/passwordChange">Change Password</a>
-        </div>
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Account Management</h1>
+    <form action="/updateProfile" method="POST">
+        <label for="username">Change Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter new username" required>
+        <button type="submit" class="button button-primary">Save Changes</button>
+    </form>
+    <div class="secondary-buttons">
+        <a href="/account_deletion" class="button button-secondary">Delete Account</a>
+        <a href="/passwordChange" class="button button-primary">Change Password</a>
     </div>
-    <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
-</body>
-
-</html>
+    <div class="secondary-buttons">
+        <a href="/dashboard" class="button button-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
