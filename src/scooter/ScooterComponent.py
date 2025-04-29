@@ -44,12 +44,13 @@ t6 = {'source': 'riding',
       'target': 'waiting', 
       'trigger': 'lock'}
 
-class Scooter():
-    def __init__(self, ID, broker, port):
+class ScooterLogic():
+    def __init__(self, ID, broker, port, battery):
         self.ID = ID
         self.broker = broker
         self.port = port
         self.topic = f'scooter/{self.ID}' # TBD
+        self.battery = battery
     
         self.mqtt_client = mqtt.Client()
         self.mqtt_client.on_connect = self.on_connect
@@ -95,4 +96,14 @@ class Scooter():
         self.mqtt_client.publish(self.topic, "lock")
 
 
+class Battery:
+    def __init__(self, ID, battery_level):
+        self.ID = ID
+        self.battery_level = battery_level # battery 0.0 - 8.0
+        
+    def get_battery(self):
+        return self.battery_level
+    
+    def charge(self, battery_level):
+        self.battery_level += 0.1
 

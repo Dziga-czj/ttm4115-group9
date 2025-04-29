@@ -1,15 +1,11 @@
 #need test on pi
 import time
-from sense_hat import SenseHat
 from GetSpeed import getSpeed
 from SetNumber import setNumber
 from SetBattery import setBattery
 
-sense = SenseHat()
-sense.set_imu_config(True, True, True)
 
-
-def display(SenseHat, speed, battery):
+def display(SenseHat, battery):
     
     R = [255, 0, 0]  # Red
     O = [0, 0, 0]
@@ -30,14 +26,13 @@ def display(SenseHat, speed, battery):
     vy = 0
     
     while True:
-        vx, vy = getSpeed(SenseHat, vx, vy, interval)
         speed = round((vx**2 + vy**2)**0.5)
         ones = speed % 10
         tens = speed // 10
         m = setBattery(setNumber(setNumber(ledMatrix, R, ones, True), R, tens), R, G, Y, battery)
-        
         SenseHat.set_pixels(m)
         time.sleep(interval)
+        vx, vy = getSpeed(SenseHat, vx, vy, interval)
         
     
 
