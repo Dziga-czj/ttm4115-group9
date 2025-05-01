@@ -337,10 +337,13 @@ def get_available_scooters(user_id = None):
     conn.close()
     return scooters
 
-def add_random_scooter():
+def add_random_scooter(battery = None, lattitude = None, longitude = None):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO scooters (battery, lattitude, longitude) VALUES (?, ?, ?)", (random.randint(10,100), random.uniform(63.41, 63.419), random.uniform(10.403, 10.405)))
+    battery = battery if battery is not None else random.randint(10, 100)
+    lattitude = lattitude if lattitude is not None else random.uniform(63.41, 63.419)
+    longitude = longitude if longitude is not None else random.uniform(10.403, 10.405)
+    cursor.execute("INSERT INTO scooters (battery, lattitude, longitude) VALUES (?, ?, ?)", (battery, lattitude, longitude))
     conn.commit()
     conn.close()
 

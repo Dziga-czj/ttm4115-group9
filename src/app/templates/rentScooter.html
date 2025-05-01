@@ -106,7 +106,7 @@
 
     scooters.forEach((scooter) =>{
         L.marker([scooter.lattitude, scooter.longitude]).addTo(map).bindPopup(
-            `Scooter #${scooter.id}` + '<br>' +
+            `Scooter #${scooter.scooter_id}` + '<br>' +
             `Battery: ${scooter.battery}%`
         );
     });
