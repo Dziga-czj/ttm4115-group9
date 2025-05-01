@@ -294,11 +294,17 @@ def update_user_password(user_id, new_password):
     conn.close()
     
 
-
 def update_user_username(user_id, new_username):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
+    conn.commit()
+    conn.close()
+
+def buy_tokens(user_id, tokens=10):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET tokens = tokens + ? WHERE id = ?", (tokens, user_id))
     conn.commit()
     conn.close()
 

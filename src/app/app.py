@@ -178,6 +178,11 @@ def delete_account():
             return render_template('account_deletion.html', error='Invalid password')
     return render_template('account_deletion.html')
 
+@app.route('/buy_tokens', methods=['GET', 'POST'])
+def buy_tokens():
+    user_id = session['user_id']
+    database_manager.buy_tokens(user_id)
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/rentScooter')
