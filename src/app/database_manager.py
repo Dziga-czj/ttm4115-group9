@@ -380,6 +380,7 @@ def check_for_expired_reservations():
     for scooter in reserved_scooters:
         if scooter[1] + 120 < int(time.time()):
             cursor.execute("UPDATE scooters SET renter_id = -1, reservation_time = 0, running = 0 WHERE scooter_id = ?", (scooter[0],))
+    conn.commit()
     conn.close()
 
 # Initialize database

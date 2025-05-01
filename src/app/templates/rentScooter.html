@@ -79,11 +79,15 @@
                         <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
                         <button type="submit" class="button button-primary">Unlock scooter</button>
                     </form>
-                    <!-- t = 2min - (current_time -  s.reservation_time) - 1 every sec  -->
                     {% endif %}
-              
                 {% endif %}
             </div>
+            <!-- t = 2min - (current_time -  s.reservation_time) - 1 every sec  -->
+            {% if s.reserved %}
+            <p>Timer to Unlock Scooter: <span id="countdown-{{ s.scooter_id }}">Unknown</span></p>
+            {% endif %}
+            
+            
             </div>
             {% endfor %}
         </div>
@@ -110,12 +114,33 @@
             `Battery: ${scooter.battery}%`
         );
     });
-    function rentScooter(id) {
-        
-        alert(`Scooter ${id} rented!`);
+
+    function updateCountdowns() {
+        const time_now = Math.floor(Date.now() / 1000);
+        scooters.forEach((s) => {
+            if (!s.reserved || s.running)
+                return;
+            const element = document.getElementById(`countdown-${s.scooter_id}`);
+            if (element == null)
+                return;
+            const remaining_time = s.reservation_time + 120 - time_now;
+            if (remaining_time <= 0) {
+                element.textContent = "00:00";
+                setTimeout(() => {
+                    console.log("Waiting 1 second");
+                }, 1000);
+                location.reload();
+            } else {
+                const minutes = Math.floor(remaining_time / 60);
+                const seconds = remaining_time % 60;
+                const text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+                console.log(text);
+                element.textContent = text;
+            }
+        });
     }
-    function reserveScooter(id) {
-        alert(`Scooter ${id} reserved!`);
-    }
+    setInterval(updateCountdowns, 1000);
+
 </script>
+
 {% endblock %}
