@@ -4,7 +4,7 @@ idle = {'name': 'idle',
         'exit': 'exit_idle'}
     
 reserving = {'name': 'reserving', 
-             'entry': 'on_reserving; start_timer("t_reserving", 5000)'}
+             'entry': 'on_reserving; start_timer("t_reserving", 120000)'}
 
 alarming = {'name': 'alarming', 
             'entry': 'on_alarming', 
