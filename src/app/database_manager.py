@@ -372,5 +372,15 @@ def lock_scooter(scooter_id, user_id):
     conn.commit()
     conn.close()
 
+def check_for_expired_reservations():
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT scooter_id, reservation_time FROM scooters WHERE reservation_time > 0 AND renter_id != -1")
+    reserved_scooters = cursor.fetchall()
+    for scooter in reserved_scooters:
+        if scooter[1] + 120 < int(time.time()):
+            cursor.execute("UPDATE scooters SET renter_id = -1, reservation_time = 0, running = 0 WHERE scooter_id = ?", (scooter[0],))
+    conn.close()
+
 # Initialize database
 initialize_db()
