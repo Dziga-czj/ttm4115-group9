@@ -67,7 +67,7 @@ class Scooter():
         print(f"Scooter{self.ID} is reserved")
         self.sense.show_message("RESERVED", text_colour=[255, 0, 0]) # display on LED matrix
     
-    # timer function not needed, already intergrated in stmpy
+    # timer function not needed, already integrated in stmpy
     # def start_timer(self, trigger, duration):
     #     self.driver.set_timer(self.stm.name, trigger, duration, self.timer_expiry)
     # def timer_expiry(self):
@@ -207,7 +207,7 @@ class Scooter_test():
         print(f"Scooter{self.ID} is reserved")
         # self.sense.show_message("RESERVED", text_colour=[255, 0, 0]) # display on LED matrix
     
-    # timer function not needed, already intergrated in stmpy
+    # timer function not needed, already integrated in stmpy
     # def start_timer(self, trigger, duration):
     #     self.driver.set_timer(self.stm.name, trigger, duration, self.timer_expiry)
     # def timer_expiry(self):
