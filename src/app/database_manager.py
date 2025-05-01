@@ -34,6 +34,9 @@ def initialize_db():
     )''')
 
     cursor.execute('''
+    DROP TABLE IF EXISTS scooters
+    ''')
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS scooters (
         scooter_id INTEGER PRIMARY KEY AUTOINCREMENT,
         renter_id INTEGER DEFAULT -1,
