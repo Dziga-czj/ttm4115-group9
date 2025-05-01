@@ -294,11 +294,17 @@ def update_user_password(user_id, new_password):
     conn.close()
     
 
-
 def update_user_username(user_id, new_username):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
+    conn.commit()
+    conn.close()
+
+def buy_tokens(user_id, tokens=10):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET tokens = tokens + ? WHERE id = ?", (tokens, user_id))
     conn.commit()
     conn.close()
 
@@ -337,10 +343,13 @@ def get_available_scooters(user_id = None):
     conn.close()
     return scooters
 
-def add_random_scooter():
+def add_random_scooter(battery = None, lattitude = None, longitude = None):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO scooters (battery, lattitude, longitude) VALUES (?, ?, ?)", (random.randint(10,100), random.uniform(63.41, 63.419), random.uniform(10.403, 10.405)))
+    battery = battery if battery is not None else random.randint(10, 100)
+    lattitude = lattitude if lattitude is not None else random.uniform(63.41, 63.419)
+    longitude = longitude if longitude is not None else random.uniform(10.403, 10.405)
+    cursor.execute("INSERT INTO scooters (battery, lattitude, longitude) VALUES (?, ?, ?)", (battery, lattitude, longitude))
     conn.commit()
     conn.close()
 
@@ -368,6 +377,16 @@ def unlock_scooter(scooter_id, user_id):
 def lock_scooter(scooter_id, user_id):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
+    print(scooter_id, user_id)
+    data = cursor.execute("SELECT running FROM scooters WHERE scooter_id = ? AND renter_id = ?", (scooter_id, user_id)).fetchone()
+    running_time = data[0]
+
+    data = cursor.execute("SELECT tokens FROM users WHERE id = ?", (user_id,)).fetchone()
+    tokens = data[0]
+
+    cursor.execute("UPDATE users SET tokens = ? WHERE id = ?", (tokens - (int(time.time()) - running_time),  user_id))
+
+
     cursor.execute("UPDATE scooters SET running = 0, renter_id = -1, reservation_time = 0 WHERE scooter_id = ? AND renter_id = ?", (scooter_id, user_id))
     conn.commit()
     conn.close()

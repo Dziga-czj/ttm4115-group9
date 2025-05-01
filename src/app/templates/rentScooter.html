@@ -83,8 +83,12 @@
                 {% endif %}
             </div>
             <!-- t = 2min - (current_time -  s.reservation_time) - 1 every sec  -->
-            {% if s.reserved %}
+            {% if s.reserved and not s.running %}
             <p>Timer to Unlock Scooter: <span id="countdown-{{ s.scooter_id }}">Unknown</span></p>
+            {% endif %}
+
+            {% if s.running %}
+            <p>Time since unlocking: <span id="countup-{{ s.scooter_id }}">Unknown</span></p>
             {% endif %}
             
             
@@ -102,17 +106,64 @@
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-    const scooters = {{ scooters|tojson }};
+    const scooters = {{ scooters | tojson }};
 
     const map = L.map('map');
     map.setView([scooters[0].lattitude, scooters[0].longitude], 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 50}).addTo(map);
 
+    const greyIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+    });
+
+    const greenIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+    });
+
+    const blueIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+    });
+
     scooters.forEach((scooter) =>{
-        L.marker([scooter.lattitude, scooter.longitude]).addTo(map).bindPopup(
-            `Scooter #${scooter.id}` + '<br>' +
-            `Battery: ${scooter.battery}%`
+        if(scooter.running > 0) {
+            L.marker([scooter.lattitude, scooter.longitude], { icon: blueIcon })
+            .addTo(map)
+            .bindPopup(
+                `Scooter #${scooter.scooter_id}` + '<br>' +
+                `Battery: ${scooter.battery}%`
+            );
+        } else if (scooter.reserved > 0) {
+            L.marker([scooter.lattitude, scooter.longitude], { icon: greenIcon })
+            .addTo(map)
+            .bindPopup(
+                `Scooter #${scooter.scooter_id}` + '<br>' +
+                `Battery: ${scooter.battery}%`
+            );
+        }
+        else {
+            L.marker([scooter.lattitude, scooter.longitude], { icon: greyIcon })
+        .addTo(map)
+        .bindPopup(
+        `Scooter #${scooter.scooter_id}` + '<br>' +
+        `Battery: ${scooter.battery}%`
+        
         );
+        }
     });
 
     function updateCountdowns() {
@@ -139,7 +190,27 @@
             }
         });
     }
+
+    function updateCountups() {
+        const time_now = Math.floor(Date.now() / 1000);
+        scooters.forEach((s) => {
+            if (s.running == 0)
+                return;
+            const element = document.getElementById(`countup-${s.scooter_id}`);
+            if (element == null)
+                return;
+            const remaining_time = time_now - s.running;
+            const minutes = Math.floor(remaining_time / 60);
+            const seconds = remaining_time % 60;
+            const text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+            console.log(text);
+            element.textContent = text;
+        });
+    }
+
     setInterval(updateCountdowns, 1000);
+    setInterval(updateCountups, 1000);
+
 
 </script>
 

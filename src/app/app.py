@@ -178,6 +178,11 @@ def delete_account():
             return render_template('account_deletion.html', error='Invalid password')
     return render_template('account_deletion.html')
 
+@app.route('/buy_tokens', methods=['GET', 'POST'])
+def buy_tokens():
+    user_id = session['user_id']
+    database_manager.buy_tokens(user_id)
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/rentScooter')
@@ -222,7 +227,7 @@ def lock_scooter():
         user_id = session['user_id']
         database_manager.lock_scooter(scooter_id, user_id)
         mqtt_client.send_message(MQTT_SCOOTER + str(scooter_id), 'lock_from_server')
-        return redirect(url_for('rentScooter'))
+        return redirect(url_for('dashboard'))
     return redirect(url_for('rentScooter'))
 
 @app.route('/unlock_scooter', methods=['POST'])
