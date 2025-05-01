@@ -1,8 +1,12 @@
 import sqlite3
 import re
+import random
+import json
+import time
 
 from argon2 import PasswordHasher
 ph = PasswordHasher()
+
 
 
 def initialize_db():
@@ -28,9 +32,27 @@ def initialize_db():
         FOREIGN KEY(user_id) REFERENCES users(id),
         FOREIGN KEY(friend_id) REFERENCES users(id)
     )''')
+
+    cursor.execute('''
+    DROP TABLE IF EXISTS scooters
+    ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS scooters (
+        scooter_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        renter_id INTEGER DEFAULT -1,
+        battery INTEGER DEFAULT 100,
+        lattitude REAL,
+        longitude REAL,
+        running INTEGER DEFAULT 0,
+        reservation_time INTEGER DEFAULT 0
+    )''')
+    
     
     conn.commit()
     conn.close()
+    add_random_scooter()
+    add_random_scooter()
+    add_random_scooter()
 
 def add_user(username, email, password):
     conn = sqlite3.connect("social_network.db")
@@ -278,6 +300,86 @@ def update_user_username(user_id, new_username):
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
     conn.commit()
+    conn.close()
+
+def get_available_scooters(user_id = None):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    if user_id:
+        data = cursor.execute('''SELECT 
+        json_group_array(
+            json_object(
+                'scooter_id', scooter_id, 
+                'battery', battery, 
+                'lattitude', lattitude,
+                'longitude', longitude,
+                'reserved', CASE WHEN renter_id = -1 THEN 0 ELSE 1 END,
+                'running', running,
+                'reservation_time', CASE WHEN renter_id = -1 THEN 0 ELSE reservation_time END
+                )
+            )
+        FROM scooters WHERE renter_id = -1 OR renter_id = ?''', (user_id,))
+    else:
+        data = cursor.execute('''SELECT 
+        json_group_array(
+            json_object(
+                'scooter_id', scooter_id, 
+                'battery', battery, 
+                'lattitude', lattitude,
+                'longitude', longitude,
+                'reserved', CASE WHEN renter_id = -1 THEN 0 ELSE 1 END,
+                'running', running,
+                'reservation_time', CASE WHEN renter_id = -1 THEN 0 ELSE reservation_time END
+                )
+            )
+        FROM scooters WHERE renter_id = -1''')
+    scooters = json.loads(data.fetchall()[0][0])
+    conn.close()
+    return scooters
+
+def add_random_scooter():
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO scooters (battery, lattitude, longitude) VALUES (?, ?, ?)", (random.randint(10,100), random.uniform(63.41, 63.419), random.uniform(10.403, 10.405)))
+    conn.commit()
+    conn.close()
+
+def reserve_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET renter_id = ?, reservation_time = ? WHERE scooter_id = ?", (user_id, int(time.time()), scooter_id))
+    conn.commit()
+    conn.close()
+
+def unlock_reserved_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET running = ? WHERE scooter_id = ? AND renter_id = ?", (int(time.time()), scooter_id, user_id))
+    conn.commit()
+    conn.close()
+
+def unlock_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET running = ?, renter_id = ? WHERE scooter_id = ?", (int(time.time()), user_id, scooter_id))
+    conn.commit()
+    conn.close()
+
+def lock_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET running = 0, renter_id = -1, reservation_time = 0 WHERE scooter_id = ? AND renter_id = ?", (scooter_id, user_id))
+    conn.commit()
+    conn.close()
+
+def check_for_expired_reservations():
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT scooter_id, reservation_time FROM scooters WHERE reservation_time > 0 AND renter_id != -1")
+    reserved_scooters = cursor.fetchall()
+    for scooter in reserved_scooters:
+        if scooter[1] + 120 < int(time.time()):
+            cursor.execute("UPDATE scooters SET renter_id = -1, reservation_time = 0, running = 0 WHERE scooter_id = ?", (scooter[0],))
     conn.close()
 
 # Initialize database

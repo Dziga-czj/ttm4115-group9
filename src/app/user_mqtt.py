@@ -7,6 +7,7 @@ MQTT_BROKER = 'mqtt20.iik.ntnu.no'
 MQTT_PORT = 1883
 
 
+MQTT_SCOOTER = "ttm4115/group09/v3/scooter/"
 MQTT_TOPIC_USER = 'ttm4115/escargot/user/'
 MQTT_TOPIC_GENERAL = 'ttm4115/escargot/general'
 MQTT_TOPIC_GENERAL_RESPONSE = 'ttm4115/escargot/general_response'
@@ -79,7 +80,7 @@ class Mqtt_client():
     def send_message(self, topic, payload):
         if DEBUG:
             print(f"Sending message to topic {topic}")
-        self.mqtt_client.publish(topic, payload=json.dumps(payload))
+        self.mqtt_client.publish(topic, payload=payload)
 
     def __init__(self):
         self.user = User()
