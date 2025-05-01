@@ -83,8 +83,12 @@
                 {% endif %}
             </div>
             <!-- t = 2min - (current_time -  s.reservation_time) - 1 every sec  -->
-            {% if s.reserved %}
+            {% if s.reserved and not s.running %}
             <p>Timer to Unlock Scooter: <span id="countdown-{{ s.scooter_id }}">Unknown</span></p>
+            {% endif %}
+
+            {% if s.running %}
+            <p>Time since unlocking: <span id="countup-{{ s.scooter_id }}">Unknown</span></p>
             {% endif %}
             
             
@@ -139,7 +143,27 @@
             }
         });
     }
+
+    function updateCountups() {
+        const time_now = Math.floor(Date.now() / 1000);
+        scooters.forEach((s) => {
+            if (s.running == 0)
+                return;
+            const element = document.getElementById(`countup-${s.scooter_id}`);
+            if (element == null)
+                return;
+            const remaining_time = time_now - s.running;
+            const minutes = Math.floor(remaining_time / 60);
+            const seconds = remaining_time % 60;
+            const text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+            console.log(text);
+            element.textContent = text;
+        });
+    }
+
     setInterval(updateCountdowns, 1000);
+    setInterval(updateCountups, 1000);
+
 
 </script>
 
