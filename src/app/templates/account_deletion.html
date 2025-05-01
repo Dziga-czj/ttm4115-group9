@@ -1,28 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Deletion</title>
-    <link rel="stylesheet" href="/static/login.css">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Account Deletion{% endblock %}
 
-    <main class="main-content">
-        <div class="container">
-            <h2 class="header-title">Delete Your Account</h2>
-            <p class="warning-text">Are you sure you want to delete your account? <br> This action cannot be undone.</p>
-            <form action="/delete_account" method="POST" class="form">
-                <label for="password" class="form-label">Enter your password to confirm:</label>
-                <input type="password" id="password" name="password" class="form-input" required>
-                <button type="submit" class="danger-buttons">Delete Account</button>
-            </form>
-            <p style="color: red;"> {{error}} </p>
-            
-            <a href="/updateProfile" class="button">&larr; Cancel</a>
-        </div>
-        <p class="footer-text">&copy; 2025 TTM4115 Group 9</p>
-    </main>
+{% block head %}
+<style>
+.warning-text {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin: 20px 0;
+}
+</style>
+{% endblock %}
 
-</body>
-</html>
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Delete Your Account</h1>
+    <p class="warning-text">
+        Are you sure you want to delete your account?<br>
+        This action cannot be undone.
+    </p>
+    <form action="/delete_account" method="POST" class="form">
+        <label for="password" class="form-label">Enter your password to confirm:</label>
+        <input type="password" id="password" name="password" class="form-input" required>
+        <button type="submit" class="button button-secondary">Delete Account</button>
+    </form>
+    <p style="color: red;">{{ error }}</p>
+    <a href="/updateProfile" class="button button-primary">&larr; Cancel</a>
+</div>
+{% endblock %}

@@ -1,96 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent a Scooter</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #4CAF50;
-        }
-        .scooter {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .scooter h2 {
-            margin: 0 0 10px;
-            color: #333;
-        }
-        .scooter p {
-            margin: 5px 0;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #007BFF;
-        }
-        .back-button {
-            display: block;
-            margin: 20px auto;
-            text-align: center;
-        }
-        .back-button button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .back-button button:hover {
-            background-color: darkblue;
-        }
-    </style>
-</head>
-<body>
-    <h1>Available Scooters</h1>
-    <div class="scooter">
-        <h2>Scooter #1</h2>
-        <p>Battery Level: <strong id="battery-level">92</strong>%</p>
-        <div class="button-group">
-            <button onclick="rentScooter()">Rent Scooter</button>
-            <button onclick="reserveScooter()">Reserve Scooter</button>
+{% extends "base.html" %}
+{% block title %}Rent a Scooter{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<style>
+.scooter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+}
+.scooter {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.scooter h2 {
+    margin: 0 0 10px;
+    color: #333;
+}
+.scooter p {
+    margin: 5px 0;
+}
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+#map {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Available Scooters</h1>
+    <div style="display: flex; gap: 20px;">
+        <div id="map"></div>
+        <div class="scooter-container">
+            {% for s in scooters %}
+            <div class="scooter">
+            <h2>Scooter #{{ s.id }}</h2>
+            <p>Battery Level: {{ s.battery }}%</p>
+            <div class="button-group">
+                <button onclick="rentScooter({{ s.id }})" class="button button-primary">Rent Scooter</button>
+                <button onclick="reserveScooter({{ s.id }})" class="button button-primary">Reserve Scooter</button>
+            </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
-    <div class="back-button">
-        <button onclick="goToDashboard()">Back to Dashboard</button>
+    
+    <div class="secondary-buttons">
+        <a href="/dashboard" class="button button-primary">Back to Dashboard</a>
     </div>
-    <script>
-        function rentScooter() {
-            alert('Scooter rented!');
-        }
+</div>
+{% endblock %}
 
-        function reserveScooter() {
-            alert('Scooter reserved!');
-        }
-        function goToDashboard() {
-            window.location.href = '/dashboard'; // Replace with the actual dashboard URL
-        }
-    </script>
-</body>
-</html>
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+    const scooters = {{ scooters|tojson }};
+
+    const map = L.map('map');
+    map.setView([scooters[0].lattitude, scooters[0].longitude], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 50}).addTo(map);
+
+    scooters.forEach((scooter) =>{
+        L.marker([scooter.lattitude, scooter.longitude]).addTo(map).bindPopup(
+            `Scooter #${scooter.id}` + '<br>' +
+            `Battery: ${scooter.battery}%`
+        );
+    });
+    function rentScooter(id) {
+        alert(`Scooter ${id} rented!`);
+    }
+    function reserveScooter(id) {
+        alert(`Scooter ${id} reserved!`);
+    }
+</script>
+{% endblock %}
