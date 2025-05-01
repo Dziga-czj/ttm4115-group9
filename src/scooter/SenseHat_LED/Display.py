@@ -1,8 +1,8 @@
 #need test on pi
 import time
-from GetSpeed import getSpeed
-from SetNumber import setNumber
-from SetBattery import setBattery
+from .GetSpeed import getSpeed
+from .SetNumber import setNumber
+from .SetBattery import setBattery
 
 
 def display(SenseHat, battery):
