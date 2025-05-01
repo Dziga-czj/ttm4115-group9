@@ -50,6 +50,9 @@ def initialize_db():
     
     conn.commit()
     conn.close()
+    add_random_scooter()
+    add_random_scooter()
+    add_random_scooter()
 
 def add_user(username, email, password):
     conn = sqlite3.connect("social_network.db")

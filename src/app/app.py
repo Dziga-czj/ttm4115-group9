@@ -190,6 +190,12 @@ def rent_scooter():
     scooters = database_manager.get_available_scooters(user_id)
     return render_template('rentScooter.html', scooters=scooters)
 
+@app.route('/add_random_scooter', methods=['POST', 'GET'])
+def add_random_scooter():
+    database_manager.add_random_scooter()
+    scooters = database_manager.get_available_scooters()
+    return redirect(url_for('rent_scooter'))
+
 @app.route('/reserve_scooter', methods=['POST'])
 def reserve_scooter():
     if request.method == 'POST':
@@ -201,12 +207,6 @@ def reserve_scooter():
         scooters = database_manager.get_available_scooters(user_id)
         return render_template('rentScooter.html', scooters=scooters)
     return render_template('rentScooter.html')
-
-@app.route('/add_random_scooter', methods=['POST', 'GET'])
-def add_random_scooter():
-    database_manager.add_random_scooter()
-    scooters = database_manager.get_available_scooters()
-    return redirect(url_for('rent_scooter'))
 
 @app.route('/unlock_reserved_scooter', methods=['POST'])
 def unlock_reserved_scooter():
