@@ -208,13 +208,33 @@ def add_random_scooter():
     scooters = database_manager.get_available_scooters()
     return redirect(url_for('rent_scooter'))
 
+@app.route('/unlock_reserved_scooter', methods=['POST'])
+def unlock_reserved_scooter():
+    if request.method == 'POST':
+        scooter_id = request.form['scooter_id']
+        user_id = session['user_id']
+        database_manager.unlock_reserved_scooter(scooter_id, user_id)
+        mqtt_client.send_message(MQTT_SCOOTER + str(scooter_id), 'unlock_reserved_from_server')
+        return redirect(url_for('rent_scooter'))
+    return render_template('rentScooter.html')
+
+@app.route('/lock_scooter', methods=['POST'])
+def lock_scooter():
+    if request.method == 'POST':
+        scooter_id = request.form['scooter_id']
+        user_id = session['user_id']
+        database_manager.lock_scooter(scooter_id, user_id)
+        mqtt_client.send_message(MQTT_SCOOTER + str(scooter_id), 'lock_from_server')
+        return redirect(url_for('rent_scooter'))
+    return render_template('rentScooter.html')
+
 @app.route('/unlock_scooter', methods=['POST'])
 def unlock_scooter():
     if request.method == 'POST':
         scooter_id = request.form['scooter_id']
         user_id = session['user_id']
         database_manager.unlock_scooter(scooter_id, user_id)
-        mqtt_client.send_message(MQTT_SCOOTER + str(scooter_id), 'unlock_reserved_from_server')
+        mqtt_client.send_message(MQTT_SCOOTER + str(scooter_id), 'unlock_from_server')
         return redirect(url_for('rent_scooter'))
     return render_template('rentScooter.html')
 

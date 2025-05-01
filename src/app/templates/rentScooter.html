@@ -53,20 +53,32 @@
             {% endif %}
             <h2>Scooter #{{ s.scooter_id }}</h2>
             <p>Battery Level: {{ s.battery }}%</p>
+            {% if s.running %}
+            <p style="color: green;">Running</p>
+
+            {% endif %}
             <div class="button-group">
                 {% if not s.reserved %}
                 <form action="/reserve_scooter" method="post">
                     <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
                     <button type="submit" class="button button-primary">Reserve Scooter</button>
                 </form>
+                <form action="/unlock_scooter" method="post">
+                    <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
+                    <button type="submit" class="button button-primary">Unlock Scooter</button>
+                </form>
                 {% else %}
                     {% if s.running %}
-                    <p> Scooter Running ! </p>
+                    <form action="/lock_scooter" method="post">
+                        <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
+                        <button type="submit" class="button button-primary" style="background-color: red;">Lock scooter</button>
+                    </form>
                     {% else %}
-                    <form action="/unlock_scooter" method="post">
+                    <form action="/unlock_reserved_scooter" method="post">
                         <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
                         <button type="submit" class="button button-primary">Unlock scooter</button>
                     </form>
+                    <!-- t = 2min - (current_time -  s.reservation_time) - 1 every sec  -->
                     {% endif %}
               
                 {% endif %}

@@ -43,7 +43,8 @@ def initialize_db():
         battery INTEGER DEFAULT 100,
         lattitude REAL,
         longitude REAL,
-        running INTEGER DEFAULT 0
+        running INTEGER DEFAULT 0,
+        reservation_time INTEGER DEFAULT 0
     )''')
     
     
@@ -310,7 +311,8 @@ def get_available_scooters(user_id = None):
                 'lattitude', lattitude,
                 'longitude', longitude,
                 'reserved', CASE WHEN renter_id = -1 THEN 0 ELSE 1 END,
-                'running', running
+                'running', running,
+                'reservation_time', CASE WHEN renter_id = -1 THEN 0 ELSE reservation_time END
                 )
             )
         FROM scooters WHERE renter_id = -1 OR renter_id = ?''', (user_id,))
@@ -323,7 +325,8 @@ def get_available_scooters(user_id = None):
                 'lattitude', lattitude,
                 'longitude', longitude,
                 'reserved', CASE WHEN renter_id = -1 THEN 0 ELSE 1 END,
-                'running', running
+                'running', running,
+                'reservation_time', CASE WHEN renter_id = -1 THEN 0 ELSE reservation_time END
                 )
             )
         FROM scooters WHERE renter_id = -1''')
@@ -341,14 +344,28 @@ def add_random_scooter():
 def reserve_scooter(scooter_id, user_id):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
-    cursor.execute("UPDATE scooters SET renter_id = ? WHERE scooter_id = ?", (user_id, scooter_id))
+    cursor.execute("UPDATE scooters SET renter_id = ?, reservation_time = ? WHERE scooter_id = ?", (user_id, int(time.time()), scooter_id))
+    conn.commit()
+    conn.close()
+
+def unlock_reserved_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET running = ? WHERE scooter_id = ? AND renter_id = ?", (int(time.time()), scooter_id, user_id))
     conn.commit()
     conn.close()
 
 def unlock_scooter(scooter_id, user_id):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
-    cursor.execute("UPDATE scooters SET running = ? WHERE scooter_id = ? AND renter_id = ?", (int(time.time()), scooter_id, user_id))
+    cursor.execute("UPDATE scooters SET running = ?, renter_id = ? WHERE scooter_id = ?", (int(time.time()), user_id, scooter_id))
+    conn.commit()
+    conn.close()
+
+def lock_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET running = 0, renter_id = -1, reservation_time = 0 WHERE scooter_id = ? AND renter_id = ?", (scooter_id, user_id))
     conn.commit()
     conn.close()
 
