@@ -46,12 +46,30 @@
         <div id="map"></div>
         <div class="scooter-container">
             {% for s in scooters %}
+            {% if s.reserved %}
+            <div class="scooter" style="background-color: #e0ffe0;">
+            {% else %}
             <div class="scooter">
-            <h2>Scooter #{{ s.id }}</h2>
+            {% endif %}
+            <h2>Scooter #{{ s.scooter_id }}</h2>
             <p>Battery Level: {{ s.battery }}%</p>
             <div class="button-group">
-                <button onclick="rentScooter({{ s.id }})" class="button button-primary">Rent Scooter</button>
-                <button onclick="reserveScooter({{ s.id }})" class="button button-primary">Reserve Scooter</button>
+                {% if not s.reserved %}
+                <form action="/reserve_scooter" method="post">
+                    <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
+                    <button type="submit" class="button button-primary">Reserve Scooter</button>
+                </form>
+                {% else %}
+                    {% if s.running %}
+                    <p> Scooter Running ! </p>
+                    {% else %}
+                    <form action="/unlock_scooter" method="post">
+                        <input type="hidden" name="scooter_id" value="{{ s.scooter_id }}">
+                        <button type="submit" class="button button-primary">Unlock scooter</button>
+                    </form>
+                    {% endif %}
+              
+                {% endif %}
             </div>
             </div>
             {% endfor %}
@@ -80,6 +98,7 @@
         );
     });
     function rentScooter(id) {
+        
         alert(`Scooter ${id} rented!`);
     }
     function reserveScooter(id) {

@@ -1,8 +1,12 @@
 import sqlite3
 import re
+import random
+import json
+import time
 
 from argon2 import PasswordHasher
 ph = PasswordHasher()
+
 
 
 def initialize_db():
@@ -28,6 +32,17 @@ def initialize_db():
         FOREIGN KEY(user_id) REFERENCES users(id),
         FOREIGN KEY(friend_id) REFERENCES users(id)
     )''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS scooters (
+        scooter_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        renter_id INTEGER DEFAULT -1,
+        battery INTEGER DEFAULT 100,
+        lattitude REAL,
+        longitude REAL,
+        running INTEGER DEFAULT 0
+    )''')
+    
     
     conn.commit()
     conn.close()
@@ -277,6 +292,60 @@ def update_user_username(user_id, new_username):
     conn = sqlite3.connect("social_network.db")
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
+    conn.commit()
+    conn.close()
+
+def get_available_scooters(user_id = None):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    if user_id:
+        data = cursor.execute('''SELECT 
+        json_group_array(
+            json_object(
+                'scooter_id', scooter_id, 
+                'battery', battery, 
+                'lattitude', lattitude,
+                'longitude', longitude,
+                'reserved', CASE WHEN renter_id = -1 THEN 0 ELSE 1 END,
+                'running', running
+                )
+            )
+        FROM scooters WHERE renter_id = -1 OR renter_id = ?''', (user_id,))
+    else:
+        data = cursor.execute('''SELECT 
+        json_group_array(
+            json_object(
+                'scooter_id', scooter_id, 
+                'battery', battery, 
+                'lattitude', lattitude,
+                'longitude', longitude,
+                'reserved', CASE WHEN renter_id = -1 THEN 0 ELSE 1 END,
+                'running', running
+                )
+            )
+        FROM scooters WHERE renter_id = -1''')
+    scooters = json.loads(data.fetchall()[0][0])
+    conn.close()
+    return scooters
+
+def add_random_scooter():
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO scooters (battery, lattitude, longitude) VALUES (?, ?, ?)", (random.randint(10,100), random.uniform(63.41, 63.419), random.uniform(10.403, 10.405)))
+    conn.commit()
+    conn.close()
+
+def reserve_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET renter_id = ? WHERE scooter_id = ?", (user_id, scooter_id))
+    conn.commit()
+    conn.close()
+
+def unlock_scooter(scooter_id, user_id):
+    conn = sqlite3.connect("social_network.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE scooters SET running = ? WHERE scooter_id = ? AND renter_id = ?", (int(time.time()), scooter_id, user_id))
     conn.commit()
     conn.close()
 
