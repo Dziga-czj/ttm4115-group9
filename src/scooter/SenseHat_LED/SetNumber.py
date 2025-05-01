@@ -80,6 +80,7 @@ def setNumber(ledMatrix, R, n, ones=False): # R is color
         m[2+x] = R
         m[9+x] = R
         m[11+x] = R
+        m[17+x] = R
         m[25+x] = R
         m[27+x] = R
         m[33+x] = R
