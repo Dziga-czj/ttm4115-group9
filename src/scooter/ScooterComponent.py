@@ -134,7 +134,7 @@ class Battery:
 
 
 
-class Scooter_test():
+class Scooter_test(): #without senseHat
     def __init__(self, ID, broker, port, battery):
         self.ID = ID
         self.broker = broker
